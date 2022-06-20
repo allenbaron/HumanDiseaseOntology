@@ -5,7 +5,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
 
-SELECT ?id (str(?label_lang) AS ?label) (str(?subClassOf_lang) AS ?subClassOf)
+SELECT ?id ?label (GROUP_CONCAT(?subClassOf_str; SEPARATOR="|") AS ?subClassOf)
 WHERE {
     ?class a owl:Class ;
         oboInOwl:id ?id ;
@@ -15,5 +15,9 @@ WHERE {
 
     FILTER (CONTAINS(STR(?class), "DOID"))
     FILTER NOT EXISTS { ?class owl:deprecated ?obsolete . }
+
+    BIND(str(?label_lang) AS ?label)
+    BIND(str(?subClassOf_lang) AS ?subClassOf_str)
 }
-ORDER BY ?label ?subClassOf
+GROUP BY ?id ?label
+ORDER BY ?label
