@@ -21,13 +21,14 @@ HD = src/ontology/HumanDO
 # to do both, use `make all`
 
 # Release process:
-# 1. Build import modules (if anything has changed)
-# 2. Update versionIRIs of import modules to release
-# 3. Build all products (doid, doid-non-classified, doid-merged, all subsets)
-# 4. Validate syntax of OBO-format products with fastobo-validator
-# 5. Verify logical structure of products with SPARQL queries
-# 6. Publish to release directory
-# 7. Generate post-build reports (counts, etc.)
+# 1. Test doid-edit.owl
+# 2. Build import modules (if anything has changed)
+# 3. Update versionIRIs of import modules to release
+# 4. Build all products (doid, doid-non-classified, doid-merged, all subsets)
+# 5. Validate syntax of OBO-format products with fastobo-validator
+# 6. Verify logical structure of products with SPARQL queries
+# 7. Publish to release directory
+# 8. Generate post-build reports (counts, etc.)
 release: imports version_imports products verify publish post
 
 # Only run `make all` if you'd like to refresh imports during the release!
@@ -144,11 +145,11 @@ reason: $(EDIT) | build/robot.jar
 build/british_english_dictionary.csv: | build
 	curl -Lk -o $@ https://raw.githubusercontent.com/obophenotype/human-phenotype-ontology/master/src/ontology/hpo_british_english_dictionary.csv
 
-build/synonyms.csv: $(EDIT) src/sparql/build/doid_synonyms.rq | build/robot.jar
+build/synonyms.csv: $(EDIT) src/sparql/build/doid_synonyms.rq | build/robot.jar test
 	@echo "Retrieving DO synonyms..."
 	@$(ROBOT) query -i $< --query $(word 2,$^) $@
 
-build/labels.csv: $(EDIT) src/sparql/build/doid_labels.rq | build/robot.jar
+build/labels.csv: $(EDIT) src/sparql/build/doid_labels.rq | build/robot.jar test
 	@echo "Retrieving DO labels..."
 	@$(ROBOT) query -i $< --query $(word 2,$^) $@
 
@@ -193,7 +194,7 @@ version_imports: | imports build/robot.jar
 		 --output src/ontology/imports/$${IMP}_import.owl ; \
 	 done
 
-$(DO).owl: $(EDIT) build/reports/report.tsv | build/robot.jar
+$(DO).owl: $(EDIT) | build/robot.jar test
 	@$(ROBOT) reason \
 	 --input $< \
 	 --create-new-ontology false \
@@ -228,7 +229,7 @@ $(DO).json: $(DO).owl | build/robot.jar
 	@$(ROBOT) convert --input $< --output $@
 	@echo "Created $@"
 
-$(DO)-base.owl: $(EDIT) | build/robot.jar
+$(DO)-base.owl: $(EDIT) | build/robot.jar test
 	@$(ROBOT) remove \
 	 --input $< \
 	 --select imports \
@@ -278,7 +279,7 @@ $(DM).obo: $(DM).owl src/sparql/build/remove-ref-type.ru | build/robot.jar
 
 human: $(DNC).owl $(DNC).obo $(DNC).json
 
-$(DNC).owl: $(EDIT) | build/robot.jar
+$(DNC).owl: $(EDIT) | build/robot.jar test
 	@$(ROBOT) remove \
 	 --input $< \
 	 --select imports \
@@ -293,7 +294,7 @@ $(DNC).owl: $(EDIT) | build/robot.jar
 	@cp $@ $(HD).owl
 	@echo "Created $@"
 
-$(DNC).obo: $(EDIT) src/sparql/build/remove-ref-type.ru | build/robot.jar
+$(DNC).obo: $(EDIT) src/sparql/build/remove-ref-type.ru | build/robot.jar test
 	@$(ROBOT) remove \
 	 --input $< \
 	 --select imports \
@@ -372,7 +373,7 @@ DOreports: $(DO_REPORTS)
 src/DOreports:
 	mkdir $@
 
-src/DOreports/%.tsv: $(EDIT) src/sparql/build/DOreport-%.rq | src/DOreports build/robot.jar
+src/DOreports/%.tsv: $(EDIT) src/sparql/build/DOreport-%.rq | src/DOreports build/robot.jar test
 	@$(ROBOT) query --input $< --query $(word 2,$^) $@
 	@sed '1 s/?//g' $@ > $@.tmp && mv $@.tmp $@
 	@echo "Created $@"
