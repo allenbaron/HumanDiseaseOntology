@@ -500,7 +500,7 @@ DNC_V_QUERIES := src/sparql/verify/dnc-verify-connectivity.rq
     # Once this is cleaned up, we can change to all DNC verifications
 #DNC_V_QUERIES := $(wildcard src/sparql/dnc-verify-*.rq)
 
-verify: verify-edit verify-do verify-dnc
+verify: verify-do verify-dnc
 
 # Verify doid-edit.owl
 verify-edit: $(EDIT) | build/robot.jar build/reports/report.tsv
