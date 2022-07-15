@@ -246,7 +246,7 @@ $(DO)-base.owl: $(EDIT) | build/robot.jar test
 
 merged: $(DM).owl $(DM).obo
 
-$(DM).owl: $(DO).owl | build/robot.jar
+$(DM).owl: $(DO).owl | build/robot.jar imports
 	@$(ROBOT) merge \
 	 --input $< \
 	 --collapse-import-closure true \
