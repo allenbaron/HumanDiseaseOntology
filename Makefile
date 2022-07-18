@@ -29,7 +29,10 @@ HD = src/ontology/HumanDO
 # 6. Verify logical structure of products with SPARQL queries
 # 7. Publish to release directory
 # 8. Generate post-build reports (counts, etc.)
-release: imports version_imports products verify publish post
+release: test imports
+	$(MAKE) products version_imports
+	$(MAKE) verify
+	$(MAKE) publish post
 
 # Only run `make all` if you'd like to refresh imports during the release!
 # This will download all new sources for the imports and may take some time
