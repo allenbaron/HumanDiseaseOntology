@@ -21,20 +21,21 @@ HD = src/ontology/HumanDO
 # to do both, use `make all`
 
 # Release process:
-# 1. Build import modules (if anything has changed)
-# 2. Update versionIRIs of import modules to release
-# 3. Build all products (doid, doid-non-classified, doid-merged, all subsets)
-# 4. Validate syntax of OBO-format products with fastobo-validator
-# 5. Verify logical structure of products with SPARQL queries
-# 6. Publish to release directory
-# 7. Generate post-build reports (counts, etc.)
-release: imports version_imports products verify publish post
+# 1. Test doid-edit.owl
+# 2. Build import modules (if anything has changed)
+# 3. Update versionIRIs of import modules to release
+# 4. Build all products (doid, doid-non-classified, doid-merged, all subsets)
+# 5. Validate syntax of OBO-format products with fastobo-validator
+# 6. Verify logical structure of products with SPARQL queries
+# 7. Publish to release directory
+# 8. Generate post-build reports (counts, etc.)
+release: imports products verify version_imports publish post
 
 # Only run `make all` if you'd like to refresh imports during the release!
 # This will download all new sources for the imports and may take some time
 all: refresh_imports release
 
-# `make test` is used for Travis integration
+# `make test` is used for Github continuous integration (CI) & for releases
 test: reason build/reports/report.tsv verify-edit
 
 build build/reports:
@@ -82,8 +83,8 @@ $(FASTOBO): build/fastobo.tar.gz
 # 4. `make refresh_<import name>` - Make specified import from newly downloaded source file.
 
 IMPS := chebi cl foodon geno hp ncbitaxon ro so symp trans uberon
-# define imports updated manually, solely for versioning
-MANUAL_IMPS := disdriv eco omim_susc
+# include manually updated imports solely for versioning
+VERSION_IMPS := $(IMPS) disdriv eco omim_susc
 
 imports: | build/robot.jar
 	@echo "Checking import modules..."
@@ -171,29 +172,16 @@ add_british_synonyms: $(EDIT) build/british_synonyms.owl | build/robot.jar
 
 products: subsets human merged DOreports
 
-# release vars
+# release vars -----------
 TS = $(shell date +'%d:%m:%Y %H:%M')
 DATE := $(shell date +'%Y-%m-%d')
-RELEASE_PREFIX := "$(OBO)doid/releases/$(DATE)/"
+# ensures the versionIRI of each release matches for all imports and products
+build/release.version: $(EDIT) | build test
+	@echo "$(OBO)doid/releases/$(DATE)/" > $@
+RELEASE_PREFIX = $(shell sed '1q' build/release.version)
 
-# Set versionIRI for imports & ext.owl (if updated)
-.PHONY: version_imports
-version_imports: | imports build/robot.jar
-	@echo "Updating versionIRI of ext.owl & imports..."
-	@$(ROBOT) annotate \
-	 --input src/ontology/ext.owl \
-	 --version-iri "$(RELEASE_PREFIX)ext.owl" \
-	convert \
-	 --format ofn \
-	 --output src/ontology/ext.owl
-	@for IMP in $(IMPS) $(MANUAL_IMPS); do \
-		$(ROBOT) annotate \
-		 --input src/ontology/imports/$${IMP}_import.owl \
-		 --version-iri "$(RELEASE_PREFIX)imports/$${IMP}_import.owl" \
-		 --output src/ontology/imports/$${IMP}_import.owl ; \
-	 done
 
-$(DO).owl: $(EDIT) build/reports/report.tsv | build/robot.jar
+$(DO).owl: $(EDIT) | build/release.version build/robot.jar test
 	@$(ROBOT) reason \
 	 --input $< \
 	 --create-new-ontology false \
@@ -201,7 +189,7 @@ $(DO).owl: $(EDIT) build/reports/report.tsv | build/robot.jar
 	 --exclude-duplicate-axioms true \
 	annotate \
 	 --annotation oboInOwl:date "$(TS)" \
-	 --version-iri "$(RELEASE_PREFIX)$(notdir $@)" \
+	 --version-iri $(RELEASE_PREFIX)$(notdir $@) \
 	 --output $@
 	@echo "Created $@"
 
@@ -228,7 +216,7 @@ $(DO).json: $(DO).owl | build/robot.jar
 	@$(ROBOT) convert --input $< --output $@
 	@echo "Created $@"
 
-$(DO)-base.owl: $(EDIT) | build/robot.jar
+$(DO)-base.owl: $(EDIT) | build/release.version build/robot.jar test
 	@$(ROBOT) remove \
 	 --input $< \
 	 --select imports \
@@ -376,6 +364,30 @@ src/DOreports/%.tsv: $(EDIT) src/sparql/build/DOreport-%.rq | src/DOreports buil
 	@$(ROBOT) query --input $< --query $(word 2,$^) $@
 	@sed '1 s/?//g' $@ > $@.tmp && mv $@.tmp $@
 	@echo "Created $@"
+
+
+# ----------------------------------------
+# VERSION IMPORTS
+# ----------------------------------------
+
+# Version ext.owl & imports only AFTER all imports & doid products are built successfully
+.PHONY: version_imports
+
+version_imports: build/release.version | build/robot.jar imports products
+	@echo "Updating versionIRI of ext.owl & imports..."
+	@$(ROBOT) annotate \
+	 --input src/ontology/ext.owl \
+	 --version-iri "$(RELEASE_PREFIX)ext.owl" \
+	convert \
+	 --format ofn \
+	 --output src/ontology/ext.owl
+	@for IMP in $(VERSION_IMPS); do \
+		$(ROBOT) annotate \
+		 --input src/ontology/imports/$${IMP}_import.owl \
+		 --version-iri "$(RELEASE_PREFIX)imports/$${IMP}_import.owl" \
+		 --output src/ontology/imports/$${IMP}_import.owl ; \
+	 done
+
 
 # ----------------------------------------
 # RELEASE
