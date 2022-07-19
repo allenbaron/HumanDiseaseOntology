@@ -49,8 +49,8 @@ $(REFRESH_IMPORTS):
 	@echo "$(IMP_REFRESH)_import.owl refreshed"
 	$(eval IMP_REFRESH="")
 
-build:
-	mkdir $@
+build/last:
+	mkdir -p $@
 
 
 # ----------------------------------------
@@ -66,6 +66,13 @@ define annotate_import
 	 --annotation rdfs:comment "Sourced from $$(sed '1q' $(2))" \
 	 --output $(1)
 endef
+
+# Single rule to save -last.owl version of imports
+define save_last
+	IMP=$(1) ; \
+	cp -p $(1) "build/last/$${IMP%_import.owl}-last.owl"
+endef
+
 
 # Message about version of source used for import (same or different;
 # if different, strip leading namespace from source version for readability)
@@ -89,7 +96,7 @@ endef
 # Targets are explicit to avoid grouped execution & prevent ambiguity (of implicit rules).
 # WARNING: Sources are ONLY downloaded when file doesn't exist. To re-download
 #	source files, use the make refresh commands.
-$(SOURCES): | build
+$(SOURCES): | build/last
 	curl -Lk $(OBO)$(notdir $@) > $@
 
 
@@ -119,8 +126,9 @@ vpath %.version build
 # FULL IMPORTS
 # ----------------------------------------
 
-symp: symp_import.owl
-symp_import.owl: build/symp.owl | symp.version
+symp: symp_import.owl build/diff/symp-diff.html
+symp_import.owl build/last/symp-last.owl &: build/symp.owl | symp.version
+	@$(call save_last,$@)
 	@$(call announce_version,$@,$|)
 	@$(ROBOT) remove \
 	 --input $< \
@@ -129,8 +137,9 @@ symp_import.owl: build/symp.owl | symp.version
 	 --select object-properties \
 	$(call annotate_import,$@,$|)
 
-trans: trans_import.owl
+trans: trans_import.owl build/diff/trans-diff.html
 trans_import.owl: build/trans.owl | trans.version
+	@$(call save_last,$@)
 	@$(call announce_version,$@,$|)
 	@$(ROBOT) remove \
 	--input $< \
@@ -144,8 +153,9 @@ trans_import.owl: build/trans.owl | trans.version
 # IMPORT MODULES
 # ----------------------------------------
 
-chebi: chebi_import.owl
+chebi: chebi_import.owl build/diff/chebi-diff.html
 chebi_import.owl: build/chebi.owl.gz chebi_terms.txt | annotations.txt chebi.version
+	@$(call save_last,$@)
 	@$(call announce_version,$@,$(word 2,$|))
 	@$(ROBOT) extract \
 	 --input $< \
@@ -159,8 +169,9 @@ chebi_import.owl: build/chebi.owl.gz chebi_terms.txt | annotations.txt chebi.ver
 	 --term "owl:Thing" \
 	$(call annotate_import,$@,$(word 2,$|))
 
-cl: cl_import.owl
+cl: cl_import.owl build/diff/cl-diff.html
 cl_import.owl: build/cl.owl cl_terms.txt | annotations.txt cl.version
+	@$(call save_last,$@)
 	@$(call announce_version,$@,$(word 2,$|))
 	@$(ROBOT) extract \
 	 --input $< \
@@ -176,8 +187,9 @@ cl_import.owl: build/cl.owl cl_terms.txt | annotations.txt cl.version
 	 --term-file annotations.txt \
 	$(call annotate_import,$@,$(word 2,$|))
 
-foodon: foodon_import.owl
+foodon: foodon_import.owl build/diff/foodon-diff.html
 foodon_import.owl: build/foodon.owl foodon_terms.txt | annotations.txt foodon.version
+	@$(call save_last,$@)
 	@$(call announce_version,$@,$(word 2,$|))
 	@$(ROBOT) merge \
 	 --input $< \
@@ -201,8 +213,9 @@ foodon_import.owl: build/foodon.owl foodon_terms.txt | annotations.txt foodon.ve
 	 --update ../../sparql/build/remove_non_en_labels.ru \
 	$(call annotate_import,$@,$(word 2,$|))
 
-geno: geno_import.owl
+geno: geno_import.owl build/diff/geno-diff.html
 geno_import.owl: build/geno.owl geno_terms.txt | annotations.txt geno.version
+	@$(call save_last,$@)
 	@$(call announce_version,$@,$(word 2,$|))
 	@$(ROBOT) extract \
 	 --input $< \
@@ -219,8 +232,9 @@ geno_import.owl: build/geno.owl geno_terms.txt | annotations.txt geno.version
 	$(call annotate_import,$@,$(word 2,$|))
 
 # The HP module is a subset of the Phenotypic abnormality branch
-hp: hp_import.owl
+hp: hp_import.owl build/diff/hp-diff.html
 hp_import.owl: build/hp.owl hp_terms.txt exclude-hp.txt | annotations.txt hp.version
+	@$(call save_last,$@)
 	@$(call announce_version,$@,$(word 2,$|))
 	@$(ROBOT) extract \
 	 --input $< \
@@ -237,8 +251,9 @@ hp_import.owl: build/hp.owl hp_terms.txt exclude-hp.txt | annotations.txt hp.ver
 	$(call annotate_import,$@,$(word 2,$|))
 
 # WARNING: NCBITaxon is BIG! This will take time.
-ncbitaxon: ncbitaxon_import.owl
+ncbitaxon: ncbitaxon_import.owl build/diff/ncbitaxon-diff.html
 ncbitaxon_import.owl: build/ncbitaxon.owl.gz ncbitaxon_terms.txt | annotations.txt ncbitaxon.version
+	@$(call save_last,$@)
 	@$(call announce_version,$@,$(word 2,$|))
 	@$(ROBOT) extract \
 	 --input $< \
@@ -252,8 +267,9 @@ ncbitaxon_import.owl: build/ncbitaxon.owl.gz ncbitaxon_terms.txt | annotations.t
 	 --term-file annotations.txt \
 	$(call annotate_import,$@,$(word 2,$|))
 
-ro: ro_import.owl
+ro: ro_import.owl build/diff/ro-diff.html
 ro_import.owl: build/ro.obo ro_terms.txt | annotations.txt ro.version
+	@$(call save_last,$@)
 	@$(call announce_version,$@,$(word 2,$|))
 	@$(ROBOT) extract \
 	 --input $< \
@@ -267,8 +283,9 @@ ro_import.owl: build/ro.obo ro_terms.txt | annotations.txt ro.version
 
 # The SO import contains only the sequence_variant branch plus a few terms
 # from sequence_feature. See IMPORT INTERMEDIATES below for more details.
-so: so_import.owl
+so: so_import.owl build/diff/so-diff.html
 so_import.owl: build/so_feature.owl build/so_variant.owl | annotations.txt so.version
+	@$(call save_last,$@)
 	@$(call announce_version,$@,$(word 2,$|))
 	@$(ROBOT) merge \
 	 --input $< \
@@ -279,8 +296,9 @@ so_import.owl: build/so_feature.owl build/so_variant.owl | annotations.txt so.ve
 	 --term-file annotations.txt \
 	$(call annotate_import,$@,$(word 2,$|))
 
-uberon: uberon_import.owl
+uberon: uberon_import.owl build/diff/uberon-diff.html
 uberon_import.owl: build/uberon.owl uberon_terms.txt | annotations.txt uberon.version
+	@$(call save_last,$@)
 	@$(call announce_version,$@,$(word 2,$|))
 	@$(ROBOT) extract \
 	 --input $< \
@@ -322,3 +340,21 @@ build/so_variant.owl: build/so.owl
 	remove \
 	 --select "owl:deprecated='true'^^xsd:boolean" \
 	 --output $@
+
+
+# ----------------------------------------
+# DIFFS
+# ----------------------------------------
+
+LAST := $(patsubst %,build/last/%-last.owl,$(IMPORTS))
+DIFF := $(patsubst %,build/diff/%.diff,$(IMPORTS))
+
+$(LAST):
+	@cp -p $(patsubst build/last/%-last.owl,%_import.owl,$@) $@
+
+build/diff/%-diff.html: %_import.owl | build/last/%-last.owl build/diff
+	@$(ROBOT) diff --left $< --right $(word 1,$|) --output $@ --format html
+	@echo "Generated $*_import.owl diff report at $@"
+
+build/diff: | build/last
+	@mkdir build/diff
