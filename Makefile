@@ -373,16 +373,25 @@ publish: $(DO).owl $(DO).obo $(DO).json\
 # Count classes, imports, and logical defs from old and new
 
 post: build/reports/report-diff.txt \
-      build/reports/branch-count.tsv \
       build/reports/missing-axioms.txt \
       build/reports/hp-do-overlap.csv \
       xref_counts
 
 # Get the last build of DO from IRI
+build/dm-last.version:
+	grep -m1 "versionIRI" |
+	curl -Ls http://purl.obolibrary.org/obo/chebi.owl | grep -m1 "versionIRI"
+
 # .PHONY: build/doid-last.owl
 build/doid-last.owl: | build/robot.jar
 	@$(ROBOT) merge \
 	 --input-iri http://purl.obolibrary.org/obo/doid/doid-merged.owl \
+	 --collapse-import-closure true \
+	 --output $@
+
+build/dnc-last.owl: | build/robot.jar
+	@$(ROBOT) merge \
+	 --input-iri http://purl.obolibrary.org/obo/doid/doid-non-classified.owl \
 	 --collapse-import-closure true \
 	 --output $@
 
@@ -391,7 +400,8 @@ build/reports/doid-diff.html: build/doid-last.owl $(DM).owl | build/robot.jar bu
 	@echo "Generated DOID diff report at $@"
 
 # all report queries
-QUERIES := $(wildcard src/sparql/build/*-report.rq)
+QUERIES := $(wildcard src/sparql/build/*-report.rq) \
+	$(wildcard src/sparql/build/*-dnc_report.rq)
 
 # target names for previous release reports
 LAST_REPORTS := $(foreach Q,$(QUERIES), build/reports/$(basename $(notdir $(Q)))-last.tsv)
