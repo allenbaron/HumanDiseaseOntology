@@ -256,10 +256,14 @@ so_import.owl: build/so_feature.owl build/so_variant.owl | annotations.txt
 	 --output $@
 
 uberon: uberon_import.owl
-uberon_import.owl: build/uberon.owl uberon_terms.txt | annotations.txt
-	$(ROBOT) extract \
+uberon_import.owl: build/uberon-base.owl uberon_terms.txt | annotations.txt
+	$(ROBOT) reason \
 	 --input $< \
+	relax \
+	reduce \
+	extract \
 	 --method mireot \
+	 --upper-term UBERON:0001062 \
 	 --lower-terms $(word 2,$^) \
 	remove \
 	 --select complement \
