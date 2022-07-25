@@ -171,9 +171,6 @@ cl_import.owl: build/cl.owl cl_terms.txt | annotations.txt cl.version
 	 --method mireot \
 	 --branch-from-term obo:CL_0000000 \
 	remove \
-	 --term GO:0005623 \
-	 --select "self ancestors" \
-	remove \
 	 --select complement \
 	 --select annotation-properties \
 	 --term-file annotations.txt \
