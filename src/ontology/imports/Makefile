@@ -286,14 +286,13 @@ so_import.owl: build/so_feature.owl build/so_variant.owl | annotations.txt build
 uberon: uberon_import.owl
 uberon_import.owl: build/uberon.owl uberon_terms.txt | annotations.txt build/uberon.version
 	@$(call announce_version,$@,$(word 2,$|))
-	@$(ROBOT) extract \
+	@$(ROBOT) relax \
 	 --input $< \
-	 --method mireot \
-	 --lower-terms $(word 2,$^) \
-	remove \
-	 --select complement \
-	 --select annotation-properties \
+	filter \
+	 --term-file $(word 2,$^) \
 	 --term-file annotations.txt \
+	 --select "self ancestors" \
+	 --signature true \
 	remove \
 	 --select "UBERON:*" \
 	 --select complement \
