@@ -291,8 +291,12 @@ uberon_import.owl: build/uberon.owl uberon_terms.txt | annotations.txt build/ube
 	filter \
 	 --term-file $(word 2,$^) \
 	 --term-file annotations.txt \
+	 --term BFO:0000050 \
 	 --select "self ancestors" \
 	 --signature true \
+	remove \
+	 --term BFO:0000050 \
+	 --select ancestors \
 	remove \
 	 --select "UBERON:*" \
 	 --select complement \
