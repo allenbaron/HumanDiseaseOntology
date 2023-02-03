@@ -289,8 +289,8 @@ so_import.owl: build/so_feature.owl build/so_variant.owl | annotations.txt build
 	$(call annotate_import,$@,$(word 2,$|))
 
 uberon: uberon_import.owl
-uberon_import.owl: build/uberon.owl uberon_terms.txt build/uberon_rm_label.txt \
- | annotations.txt build/uberon.version
+uberon_import.owl: build/uberon.owl uberon_terms.txt exclude-uberon.txt \
+ build/uberon_rm_label.txt | annotations.txt build/uberon.version
 	@$(call announce_version,$@,$(word 2,$|))
 	@$(ROBOT) extract \
 	 --input $< \
@@ -305,11 +305,13 @@ uberon_import.owl: build/uberon.owl uberon_terms.txt build/uberon_rm_label.txt \
 	 --select complement \
 	 --select classes \
 	remove \
-	 --term-file $(word 3,$^) \
+	 --term-file $(word 4,$^) \
 	 --term UBERON:0001062 \
 	 --term rdfs:label \
 	 --axioms annotation \
 	 --trim false \
+	remove \
+	 --term-file $(word 3,$^) \
 	$(call annotate_import,$@,$(word 2,$|))
 
 

@@ -2079,8 +2079,8 @@
     <!-- http://purl.obolibrary.org/obo/UBERON_0001463 -->
 
     <owl:Class rdf:about="http://purl.obolibrary.org/obo/UBERON_0001463">
-        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/UBERON_0006048"/>
-        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/UBERON_0019231"/>
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/UBERON_0002389"/>
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/UBERON_0002544"/>
         <oboInOwl:id>UBERON:0001463</oboInOwl:id>
     </owl:Class>
     
@@ -6209,22 +6209,10 @@
     
 
 
-    <!-- http://purl.obolibrary.org/obo/UBERON_0006048 -->
-
-    <owl:Class rdf:about="http://purl.obolibrary.org/obo/UBERON_0006048">
-        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/UBERON_0002544"/>
-        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/UBERON_0019221"/>
-        <oboInOwl:id>UBERON:0006048</oboInOwl:id>
-        <rdfs:label>digit 1</rdfs:label>
-    </owl:Class>
-    
-
-
     <!-- http://purl.obolibrary.org/obo/UBERON_0006052 -->
 
     <owl:Class rdf:about="http://purl.obolibrary.org/obo/UBERON_0006052">
         <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/UBERON_0002544"/>
-        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/UBERON_0019221"/>
         <oboInOwl:id>UBERON:0006052</oboInOwl:id>
         <rdfs:label>digit 5</rdfs:label>
     </owl:Class>
@@ -8076,28 +8064,6 @@
         <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/UBERON_0005156"/>
         <oboInOwl:id>UBERON:0019042</oboInOwl:id>
         <rdfs:label>reproductive system mucosa</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/UBERON_0019221 -->
-
-    <owl:Class rdf:about="http://purl.obolibrary.org/obo/UBERON_0019221">
-        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/UBERON_0002544"/>
-        <oboInOwl:id>UBERON:0019221</oboInOwl:id>
-        <rdfs:label>digit 1 or 5</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/UBERON_0019231 -->
-
-    <owl:Class rdf:about="http://purl.obolibrary.org/obo/UBERON_0019231">
-        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/UBERON_0002389"/>
-        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/UBERON_0002544"/>
-        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/UBERON_0019221"/>
-        <oboInOwl:id>UBERON:0019231</oboInOwl:id>
-        <rdfs:label>manual digit 1 or 5</rdfs:label>
     </owl:Class>
     
 
