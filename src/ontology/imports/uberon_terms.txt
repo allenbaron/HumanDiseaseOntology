@@ -295,7 +295,6 @@ UBERON:0005409	# alimentary part of gastrointestinal system
 UBERON:0005431	# anterior spinal artery
 UBERON:0005456	# jugular foramen
 UBERON:0005610	# iliac vein
-UBERON:0006052	# digit 5
 UBERON:0006059	# falx cerebri
 UBERON:0006558	# lymphatic part of lymphoid system
 UBERON:0006562	# pharynx
@@ -406,3 +405,5 @@ UBERON:0001066	# intervertebral disk
 UBERON:0011136	# ligament of vertebral column
 UBERON:0001270	# bony pelvis
 UBERON:0002389	# finger @REPLACE
+UBERON:0003635	# fifth toe @REPLACE
+UBERON:0003625  # little finger @REPLACE

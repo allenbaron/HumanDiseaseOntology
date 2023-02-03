@@ -2096,6 +2096,16 @@
     
 
 
+    <!-- http://purl.obolibrary.org/obo/UBERON_0001466 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/UBERON_0001466">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/UBERON_0002544"/>
+        <oboInOwl:id>UBERON:0001466</oboInOwl:id>
+        <rdfs:label>pedal digit</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- http://purl.obolibrary.org/obo/UBERON_0001474 -->
 
     <owl:Class rdf:about="http://purl.obolibrary.org/obo/UBERON_0001474">
@@ -4878,6 +4888,26 @@
     
 
 
+    <!-- http://purl.obolibrary.org/obo/UBERON_0003625 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/UBERON_0003625">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/UBERON_0002389"/>
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/UBERON_0002544"/>
+        <oboInOwl:id>UBERON:0003625</oboInOwl:id>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/UBERON_0003635 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/UBERON_0003635">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/UBERON_0002544"/>
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/UBERON_0019241"/>
+        <oboInOwl:id>UBERON:0003635</oboInOwl:id>
+    </owl:Class>
+    
+
+
     <!-- http://purl.obolibrary.org/obo/UBERON_0003643 -->
 
     <owl:Class rdf:about="http://purl.obolibrary.org/obo/UBERON_0003643">
@@ -6205,16 +6235,6 @@
         <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/UBERON_0000064"/>
         <oboInOwl:id>UBERON:0006003</oboInOwl:id>
         <rdfs:label>integumentary adnexa</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- http://purl.obolibrary.org/obo/UBERON_0006052 -->
-
-    <owl:Class rdf:about="http://purl.obolibrary.org/obo/UBERON_0006052">
-        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/UBERON_0002544"/>
-        <oboInOwl:id>UBERON:0006052</oboInOwl:id>
-        <rdfs:label>digit 5</rdfs:label>
     </owl:Class>
     
 
@@ -8064,6 +8084,17 @@
         <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/UBERON_0005156"/>
         <oboInOwl:id>UBERON:0019042</oboInOwl:id>
         <rdfs:label>reproductive system mucosa</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.obolibrary.org/obo/UBERON_0019241 -->
+
+    <owl:Class rdf:about="http://purl.obolibrary.org/obo/UBERON_0019241">
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/UBERON_0001466"/>
+        <rdfs:subClassOf rdf:resource="http://purl.obolibrary.org/obo/UBERON_0002544"/>
+        <oboInOwl:id>UBERON:0019241</oboInOwl:id>
+        <rdfs:label>pedal digit 1 or 5</rdfs:label>
     </owl:Class>
     
 
