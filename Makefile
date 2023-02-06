@@ -456,6 +456,20 @@ DOreports/DO-equivalentClass.tsv: $(EDIT) | DOreports build/robot.jar
 	@awk -F"\t" '$$3!=""' $@ > $@.tmp && mv $@.tmp $@
 	@echo "Created $@"
 
+DOreports/DO-ICDO-anatomy.tsv: $(DM).owl | DOreports build/robot.jar
+	@robot remove --input $< \
+	 --term DOID:14566 \
+	 --select "self descendants" \
+	 --select complement \
+	 --select "<http://purl.obolibrary.org/obo/DOID_*>" \
+	 --signature true \
+	export \
+	 --prefix "oboInOwl: http://www.geneontology.org/formats/oboInOwl#" \
+	 --header "ID|LABEL|oboInOwl:hasDbXref|Equivalent Class [ID]|SubClass Of [ID]" \
+	 --entity-select anonymous \
+	 --sort "Equivalent Class [ID]|SubClass Of [ID]" \
+	 --export $@
+
 
 # ----------------------------------------
 # VERSION IMPORTS
