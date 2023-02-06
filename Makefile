@@ -456,8 +456,9 @@ DOreports/DO-equivalentClass.tsv: $(EDIT) | DOreports build/robot.jar
 	@awk -F"\t" '$$3!=""' $@ > $@.tmp && mv $@.tmp $@
 	@echo "Created $@"
 
-DOreports/DO-ICDO-anatomy.tsv: $(DM).owl | DOreports build/robot.jar
-	@robot remove --input $< \
+build/reports/temp/DO-ICDO-anatomy.tsv: $(DM).owl | DOreports build/robot.jar
+	@robot remove \
+	 --input $< \
 	 --term DOID:14566 \
 	 --select "self descendants" \
 	 --select complement \
