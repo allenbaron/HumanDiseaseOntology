@@ -1,0 +1,6 @@
+semapv_voc:ManualMappingCuration
+semapv_voc:MappingReview
+semapv_voc:LexicalMatching
+semapv_voc:UnspecifiedMatching
+semapv_voc:LexicalSimilarityThresholdMatching
+semapv_voc:CompositeMatching

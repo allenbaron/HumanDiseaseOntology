@@ -346,3 +346,24 @@ build/so_variant.owl: build/so.owl
 
 build/uberon_rm_label.txt: uberon_terms.txt | build
 	@sed -nE 's/^[^U]*(UBERON:[0-9]+).*@REPLACE/\1/p' $< > $@
+
+
+# ----------------------------------------
+# MAPPING IMPORT
+# ----------------------------------------
+
+semapv: semapv_import.owl
+semapv_import.owl: build/semapv.owl semapv_terms.txt | annotations.txt build/semapv.version
+	@$(call announce_version,$@,$(word 2,$|))
+	@$(ROBOT) extract \
+	 --prefix "semapv_voc: https://w3id.org/semapv/vocab/" \
+	 --input $< \
+	 --method mireot \
+	 --lower-terms $(word 2,$^) \
+	$(call annotate_import,$@,$(word 2,$|))
+
+build/semapv.owl: | build
+	curl -Lk https://raw.githubusercontent.com/mapping-commons/semantic-mapping-vocabulary/main/semapv.owl > $@
+
+build/semapv.version: build/semapv.owl
+	@grep "owl:versionIRI" $< | sed -E 's/.*"([^"]+)".*/\1/' > $@
