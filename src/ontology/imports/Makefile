@@ -129,28 +129,10 @@ $(SOURCE_OWL_GZ): build/%.owl.gz: build/%.version | build build/last/src
 FORCE:
 
 $(patsubst %,build/%.version,$(IMPORT_OWL)): FORCE | build
-	@SRC=$(basename $@).owl ; \
-	 LATEST=$$(curl -sLk $(OBO)$$(basename $${SRC}) | $(extract_versionIRI)) ; \
-	 if [[ -f $@ && -f $${SRC} ]]; then \
-		SRC_VERS=$$(sed '1q' $@) ; \
-		if [[ $${SRC_VERS} != $${LATEST} ]]; then \
-			echo $${LATEST} > $@ ; \
-		fi ; \
-	 else \
-		echo $${LATEST} > $@ ; \
-	 fi
+	@$(call which_latest,$@,$(OBO)$(notdir $(basename $@).owl))
 
 $(patsubst %,build/%.version,$(IMPORT_OWL_GZ)): FORCE | build
-	@SRC=$(basename $@).owl.gz ; \
-	 LATEST=$$(curl -sLk $(OBO)$$(basename $${SRC}) | gzcat | $(extract_versionIRI)) ; \
-	 if [[ -f $@ && -f $${SRC} ]]; then \
-		SRC_VERS=$$(sed '1q' $@) ; \
-		if [[ $${SRC_VERS} != $${LATEST} ]]; then \
-			echo $${LATEST} > $@ ; \
-		fi ; \
-	 else \
-		echo $${LATEST} > $@ ; \
-	 fi
+	@$(call which_latest,$@,$(OBO)$(notdir $(basename $@).owl.gz))
 
 
 # ----------------------------------------
