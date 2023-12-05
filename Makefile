@@ -352,7 +352,8 @@ DATE := $(shell date +'%Y-%m-%d')
 RELEASE_PREFIX := "$(OBO)doid/releases/$(DATE)/"
 
 # standardized .obo creation;
-#	args = output,input,version-iri,ontology-iri (optional, use "" to keep from input file)
+#      args = output,input,version-iri,ontology-iri (optional)
+#      Use "" for ontology-iri to retain the onotology IRI from the input file
 define build_obo
 	@ONT_IRI=$(4) ; \
 	 ONT_IRI=$${ONT_IRI:+"--ontology-iri $(4)"} ; \
