@@ -16,25 +16,22 @@ ROBOT := java -Xmx10G -jar ../../../build/robot.jar
 # SECONDARY COMMANDS (these should rarely be needed)
 # 3. `make refresh_imports` - Remove imports/build directory and make all imports from newly downloaded source files.
 # 4. `make refresh_<import name>` - Remove source file from imports/build directory and make import from newly downloaded source file.
-# * For import names see IMPORT_OWL and IMPORT_OWL_GZ variables below
+# * For import names see IMP_OWL and IMP_OWL_GZ variables below
 
 # Other commands (primarily exist for debugging)
 # 1. `make clean` - Remove imports/build directory
 # 2. `make versions` - Update only <import>.version files in imports/build
 # 3. `make sources` - Update versions and source files in imports/build
 
-IMPORT_OWL := cl eco foodon geno hp ro so symp trans uberon
-# Download compressed (large file size)
-IMPORT_OWL_GZ := chebi ncbitaxon
-IMPORTS := $(IMPORT_OWL) $(IMPORT_OWL_GZ)
+IMPS := $(IMP_OWL) $(IMP_OWL_GZ)
 
-SOURCE_OWL := $(addprefix build/, $(addsuffix .owl,$(IMPORT_OWL)))
-SOURCE_OWL_GZ := $(addprefix build/, $(addsuffix .owl.gz,$(IMPORT_OWL_GZ)))
+SOURCE_OWL := $(addprefix build/, $(addsuffix .owl,$(IMP_OWL)))
+SOURCE_OWL_GZ := $(addprefix build/, $(addsuffix .owl.gz,$(IMP_OWL_GZ)))
 SOURCES := $(SOURCE_OWL) $(SOURCE_OWL_GZ)
 
-VERSIONS := $(addprefix build/, $(addsuffix .version,$(IMPORTS)))
+VERSIONS := $(addprefix build/, $(addsuffix .version,$(IMPS)))
 
-imports: $(IMPORTS)
+imports: $(IMPS)
 
 sources: $(SOURCES)
 
@@ -49,8 +46,8 @@ refresh_imports:
 
 # Refresh (clean & rebuild) *individual* imports with `refresh_{import}`
 IMP_REFRESH := ""
-REFRESH_IMPORTS := $(foreach IMP,$(IMPORTS),refresh_$(IMP))
-$(REFRESH_IMPORTS):
+REFRESH_IMPS := $(foreach IMP,$(IMPS),refresh_$(IMP))
+$(REFRESH_IMPS):
 	$(eval IMP_REFRESH=$(patsubst refresh_%,%,$@))
 	@rm -f $(filter build/$(IMP_REFRESH)%,$(SOURCES))
 	@$(MAKE) $(IMP_REFRESH)
@@ -128,10 +125,10 @@ $(SOURCE_OWL_GZ): build/%.owl.gz: build/%.version | build build/last/src
 # Update <import>.version if newer version available (always run)
 FORCE:
 
-$(patsubst %,build/%.version,$(IMPORT_OWL)): FORCE | build
+$(patsubst %,build/%.version,$(IMP_OWL)): FORCE | build
 	@$(call which_latest,$@,$(OBO)$(notdir $(basename $@).owl))
 
-$(patsubst %,build/%.version,$(IMPORT_OWL_GZ)): FORCE | build
+$(patsubst %,build/%.version,$(IMP_OWL_GZ)): FORCE | build
 	@$(call which_latest,$@,$(OBO)$(notdir $(basename $@).owl.gz))
 
 

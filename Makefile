@@ -8,6 +8,9 @@ SHELL := bash
 .SECONDARY:
 .NOTPARALLEL:
 
+include src/util/functions.mk
+include metadata.mk
+
 DO = src/ontology/doid
 EDIT = src/ontology/doid-edit.owl
 OBO = http://purl.obolibrary.org/obo/
@@ -315,9 +318,7 @@ $(FIX): fix_%: $(EDIT) src/sparql/update/fix_%.ru | \
 # 3. `make <import name>` - Make specified import from existing soure file (WARNING: will download ONLY if it doesn't exist).
 # 4. `make refresh_<import name>` - Make specified import from newly downloaded source file.
 
-IMPS := chebi cl eco foodon geno hp ncbitaxon ro so symp trans uberon
-# define imports updated manually, solely for versioning
-MANUAL_IMPS := disdriv omim_susc
+IMPS := $(IMP_OWL) $(IMP_OWL_GZ)
 
 imports: | check_robot
 	@echo "Checking import modules..."
