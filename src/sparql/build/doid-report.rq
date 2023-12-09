@@ -1,12 +1,46 @@
-# Return a count of non-obsolete classes & definitions
-
+# Return a count of non-obsolete classes, definitions, equivalent classes,
+# and logical subclasses (long format).
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX obo: <http://purl.obolibrary.org/obo/>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 
-SELECT (COUNT(?class) AS ?classes) (COUNT(?def) AS ?definitions)
+SELECT ?type (COUNT(DISTINCT ?value) AS ?count)
 WHERE {
-  ?class a owl:Class .
-  FILTER(CONTAINS(str(?class), "DOID_"))
-  OPTIONAL { ?class obo:IAO_0000115 ?def . }
-  FILTER NOT EXISTS { ?class owl:deprecated ?obsolete . }
+  {
+    SELECT DISTINCT ?type ?value
+    WHERE {
+      ?value a owl:Class .
+      FILTER( CONTAINS( str(?value), "DOID_"  ) )
+      FILTER NOT EXISTS { ?value owl:deprecated ?obsolete . }
+      BIND( "class" AS ?type )
+    }
+  }
+  UNION
+  {
+    SELECT ?type ?value
+    WHERE {
+      VALUES (?pred ?type) {
+        (obo:IAO_0000115 "definition")
+        (owl:equivalentClass "eq_class")
+      }
+      ?class a owl:Class ;
+        ?pred ?value .
+      FILTER( CONTAINS( str(?class), "DOID_" ) )
+      FILTER NOT EXISTS { ?class owl:deprecated ?obsolete . }
+    }
+  }
+  UNION
+  {
+    SELECT ?type ?value
+    WHERE {
+        ?class a owl:Class ;
+        rdfs:subClassOf ?value .
+      FILTER( CONTAINS( str(?class), "DOID_" ) )
+      FILTER NOT EXISTS { ?class owl:deprecated ?obsolete . }
+      FILTER( isBlank(?value) )
+      BIND( "logical_subclass" AS ?type )
+    }
+  }
 }
+GROUP BY ?type
+ORDER BY ?type
