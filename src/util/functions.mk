@@ -43,18 +43,20 @@ define which_latest
 	fi
 endef
 
-# Concatenate files
+# Concatenate Tabular (CSV/TSV) files
 #
 # Expects the following inputs (in order):
 # 1. Path for desired concatenated file.
-# 2. List of files to concatenate, possibly as a wildcard recognized by ls.
-# 4. Whether input files should be deleted, true or false.
+# 2. List of space-separated files to concatenate, possibly one or more wildcards recognized by ls.
+# 3. Whether input files should be deleted, true or false.
 #
-# Example: $(call concat_files,build/reports/quarter_test.csv,$(wildcard build/reports/temp/verify-quarterly-*.csv,true)
-define concat_files
+# Output will always be TSV
+# Example: $(call concat_tbls,build/reports/quarter_test.csv,$(wildcard build/reports/temp/verify-quarterly-*.csv,true)
+define concat_tbls
 	@TMP_FILES=$$(ls $(2)) ; \
 	 if [ "$$TMP_FILES" ]; then \
-		awk 'BEGIN { OFS = FS = "," } ; { \
+		if [[ "$$TMP_FILES" = *".csv" ]]; then SEP="," ; else SEP="\t"; fi ; \
+		awk -v sep=$${SEP} 'BEGIN { FS = sep; OFS = "\t" } ; { \
 			if (FNR == 1) { \
 				if (NR != 1) { print "" } ; \
 				print "TEST: " FILENAME ; print $$0 \
