@@ -66,3 +66,49 @@ define concat_tbls
 		if [[ $$? -eq 0 && $(3) ]]; then rm -f $$TMP_FILES ; fi ; \
 	 fi ;
 endef
+
+# Join Last/New Tabular (CSV/TSV) files
+#
+# Expects the following inputs (in order):
+# 1. Delimiter of files ("," for CSV, "\t" for TSV; must be quoted).
+# 2. Path to "last" file.
+# 3. Path to "new" file.
+# 4. Path for desired joined file.
+#
+# Output will always be TSV
+# Example: $(call concat_tbls,",",build/reports/quarter_test.csv,$(wildcard build/reports/temp/verify-quarterly-*.csv,true)
+define join_last_new
+	@sed -i '' '1 s/count/new_count/' $(1)
+	@sed -i '' '1 s/count/last_count/' $(2)
+	@join $(1) $(2)
+	@awk -F'","'  '{ print $2 - $3 }' filename.csv
+
+endef
+
+# Merge all but last column in Tabular (CSV/TSV) files
+#
+# Expects the following inputs (in order):
+# 1. Delimiter of files ("," for CSV, "\t" for TSV; must be quoted).
+# 2. Path to "last" file.
+# 3. Path to "new" file.
+# 4. Path for desired joined file.
+#
+# Output will always be TSV
+# Example: $(call merge_cols,build/reports/DEL.tsv)
+define merge_cols
+	@if [[ $(1) = *".csv" ]]; then SEP="," ; else SEP="\t"; fi ; \
+	awk -v sep=$${SEP} 'BEGIN { OFS = FS = sep } ; \
+	{ \
+		for (i=1; i<NF; ++i) { printf "%s|", $$i } ; \
+		printf "%s%s\n",OFS,$$NF \
+	}' $(1) > $(1).tmp && \
+	mv $(1).tmp $(1)
+endef
+
+# awk 'BEGIN { OFS = FS "\t" } ; \
+# { \
+# 	for (i=1; i<NF; ++i) { printf "%s|", $i } ; \
+# 	printf "%s%s\n",OFS,$NF \
+# }' build/reports/DEL.tsv
+
+# awk 'BEGIN { OFS = FS "\t" } ; {for (i=1; i<NF; ++i) { printf "%s|", $i } ; printf "%s%s\n",OFS,$NF }' build/reports/DEL.tsv
