@@ -6,6 +6,9 @@ SHELL := bash
 .DELETE_ON_ERROR:
 .SUFFIXES:
 
+# Always run rules with this pre-req
+FORCE:
+
 OBO = http://purl.obolibrary.org/obo/
 ROBOT := java -Xmx10G -jar ../../../build/robot.jar
 
@@ -121,9 +124,6 @@ $(SOURCE_OWL_GZ): build/%.owl.gz: build/%.version | build build/last/src
 # ----------------------------------------
 # CAPTURE LATEST versionIRIs
 # ----------------------------------------
-
-# Update <import>.version if newer version available (always run)
-FORCE:
 
 $(patsubst %,build/%.version,$(IMP_OWL)): FORCE | build
 	@$(call which_latest,$@,$(OBO)$(notdir $(basename $@).owl))
