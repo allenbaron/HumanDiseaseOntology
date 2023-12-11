@@ -76,7 +76,7 @@ endef
 
 # Message about version of source used for import (same or different;
 # if different, strip leading namespace from source version for readability)
-define announce_version
+define msg_vrs_change
 	CUR_VERS=$$(grep -s 'rdfs:comment.*Sourced from' $(1) | sed -E 's/.*Sourced from ([^< ]+).*/\1/') ; \
 	SRC_VERS=$$(sed '1q' $(2)) ; \
 	if [[ $${CUR_VERS} = $${SRC_VERS} ]]; then \
@@ -138,7 +138,7 @@ $(patsubst %,build/%.version,$(IMP_OWL_GZ)): FORCE | build
 
 symp: symp_import.owl
 symp_import.owl: build/symp.owl | build/symp.version build/last
-	@$(call announce_version,$@,$|)
+	@$(call msg_vrs_change,$@,$|)
 	@$(save_last)
 	@$(ROBOT) remove \
 	 --input $< \
@@ -149,7 +149,7 @@ symp_import.owl: build/symp.owl | build/symp.version build/last
 
 trans: trans_import.owl
 trans_import.owl: build/trans.owl | build/trans.version build/last
-	@$(call announce_version,$@,$|)
+	@$(call msg_vrs_change,$@,$|)
 	@$(save_last)
 	@$(ROBOT) remove \
 	--input $< \
@@ -166,7 +166,7 @@ trans_import.owl: build/trans.owl | build/trans.version build/last
 chebi: chebi_import.owl
 chebi_import.owl: build/chebi.owl.gz chebi_terms.txt | annotations.txt \
  build/chebi.version build/last
-	@$(call announce_version,$@,$(word 2,$|))
+	@$(call msg_vrs_change,$@,$(word 2,$|))
 	@$(save_last)
 	@$(ROBOT) extract \
 	 --input $< \
@@ -183,7 +183,7 @@ chebi_import.owl: build/chebi.owl.gz chebi_terms.txt | annotations.txt \
 cl: cl_import.owl
 cl_import.owl: build/cl.owl cl_terms.txt | annotations.txt build/cl.version \
  build/last
-	@$(call announce_version,$@,$(word 2,$|))
+	@$(call msg_vrs_change,$@,$(word 2,$|))
 	@$(save_last)
 	@$(ROBOT) extract \
 	 --input $< \
@@ -206,7 +206,7 @@ cl_import.owl: build/cl.owl cl_terms.txt | annotations.txt build/cl.version \
 eco: eco_import.owl
 eco_import.owl: build/eco.owl eco_terms.txt | annotations.txt build/eco.version \
  build/last
-	@$(call announce_version,$@,$(word 2,$|))
+	@$(call msg_vrs_change,$@,$(word 2,$|))
 	@$(save_last)
 	@$(ROBOT) extract \
 	 --input $< \
@@ -224,7 +224,7 @@ eco_import.owl: build/eco.owl eco_terms.txt | annotations.txt build/eco.version 
 foodon: foodon_import.owl
 foodon_import.owl: build/foodon.owl foodon_terms.txt | annotations.txt \
  build/foodon.version build/last
-	@$(call announce_version,$@,$(word 2,$|))
+	@$(call msg_vrs_change,$@,$(word 2,$|))
 	@$(save_last)
 	@$(ROBOT) merge \
 	 --input $< \
@@ -251,7 +251,7 @@ foodon_import.owl: build/foodon.owl foodon_terms.txt | annotations.txt \
 geno: geno_import.owl
 geno_import.owl: build/geno.owl geno_terms.txt | annotations.txt \
  build/geno.version build/last
-	@$(call announce_version,$@,$(word 2,$|))
+	@$(call msg_vrs_change,$@,$(word 2,$|))
 	@$(save_last)
 	@$(ROBOT) extract \
 	 --input $< \
@@ -271,7 +271,7 @@ geno_import.owl: build/geno.owl geno_terms.txt | annotations.txt \
 hp: hp_import.owl
 hp_import.owl: build/hp.owl hp_terms.txt exclude-hp.txt | annotations.txt \
  build/hp.version build/last
-	@$(call announce_version,$@,$(word 2,$|))
+	@$(call msg_vrs_change,$@,$(word 2,$|))
 	@$(save_last)
 	@$(ROBOT) extract \
 	 --input $< \
@@ -301,7 +301,7 @@ hp_import.owl: build/hp.owl hp_terms.txt exclude-hp.txt | annotations.txt \
 ncbitaxon: ncbitaxon_import.owl
 ncbitaxon_import.owl: build/ncbitaxon.owl.gz ncbitaxon_terms.txt | \
  annotations.txt build/ncbitaxon.version build/last
-	@$(call announce_version,$@,$(word 2,$|))
+	@$(call msg_vrs_change,$@,$(word 2,$|))
 	@$(save_last)
 	@$(ROBOT) extract \
 	 --input $< \
@@ -322,7 +322,7 @@ ncbitaxon_import.owl: build/ncbitaxon.owl.gz ncbitaxon_terms.txt | \
 ro: ro_import.owl
 ro_import.owl: build/ro.owl ro_terms.txt | annotations.txt build/ro.version \
  build/last
-	@$(call announce_version,$@,$(word 2,$|))
+	@$(call msg_vrs_change,$@,$(word 2,$|))
 	@$(save_last)
 	@$(ROBOT) extract \
 	 --input $< \
@@ -339,7 +339,7 @@ ro_import.owl: build/ro.owl ro_terms.txt | annotations.txt build/ro.version \
 so: so_import.owl
 so_import.owl: build/so_feature.owl build/so_variant.owl | annotations.txt \
  build/so.version build/last
-	@$(call announce_version,$@,$(word 2,$|))
+	@$(call msg_vrs_change,$@,$(word 2,$|))
 	@$(save_last)
 	@$(ROBOT) merge \
 	 --input $< \
@@ -353,7 +353,7 @@ so_import.owl: build/so_feature.owl build/so_variant.owl | annotations.txt \
 uberon: uberon_import.owl
 uberon_import.owl: build/uberon.owl uberon_terms.txt build/uberon_rm_label.txt \
  | annotations.txt build/uberon.version build/last
-	@$(call announce_version,$@,$(word 2,$|))
+	@$(call msg_vrs_change,$@,$(word 2,$|))
 	@$(save_last)
 	@$(ROBOT) extract \
 	 --input $< \
