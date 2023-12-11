@@ -11,7 +11,7 @@ DEFAULT_PRODUCT := reasoned
 
 # suffix to append to full/merged file
 # options: 'full' or 'merged'
-FULL_SUFFIX := merged
+FULL_NM := merged
 
 # Subsets to create as products during release
 SUBSETS := DO_AGR_slim DO_FlyBase_slim DO_MGI_slim DO_GXD_slim \
@@ -21,6 +21,10 @@ SUBSETS := DO_AGR_slim DO_FlyBase_slim DO_MGI_slim DO_GXD_slim \
  gram-positive_bacterial_infectious_disease  \
  sexually_transmitted_infectious_disease tick-borne_infectious_disease \
  zoonotic_infectious_disease
+
+# Product to build subsets from
+# options: 'primary', 'base', 'full', 'non-classified'
+SUBSET_INPUT := non-classified
   
 
 # ----------------------------------------
@@ -52,7 +56,7 @@ PUBLISH_DIR := $(RELEASE_DIR)/releases
 # Dataset directory
 DATASET_DIR := DOreports
 
-# Verify products in directory
+# Verify products in directory (products in subdirs excluded)
 VERIFY_DIR := $(RELEASE_DIR)
 
 
