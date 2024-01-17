@@ -339,6 +339,27 @@ $(FIX): fix_%: $(EDIT) src/sparql/update/fix_%.ru | \
 
 
 ##########################################
+## CURATION QUEUES
+##########################################
+
+INVENTORY_FILES := $(wildcard src/sparql/update/inventory_*.rq)
+INVENTORY := $(basename $(notdir $(INVENTORY_FILES)))
+
+.PHONY: inventory $(INVENTORY)
+
+inventory: $(INVENTORY)
+
+$(INVENTORY): inventory_%: build/reports/inventory_%.tsv
+
+build/reports/inventory_%.tsv: $(EDIT) src/sparql/update/inventory_%.rq | \
+ check_robot
+	@$(ROBOT) query \
+	 --input $< \
+	 --query $(word 2,$^) $@
+	@echo "For $* inventory, see $@"
+
+
+##########################################
 ## BUILDING IMPORTS
 ##########################################
 

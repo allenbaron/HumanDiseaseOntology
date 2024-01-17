@@ -1,0 +1,26 @@
+# Check for obsoleted xrefs
+# Uses the following SPARQL endpoints:
+#	 - Ontobee: <http://sparql.hegroup.org/sparql/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
+PREFIX efo1: <http://www.ebi.ac.uk/efo/>
+
+SELECT ?doid ?xref ?xref_status ?details
+WHERE {
+	SERVICE <http://sparql.hegroup.org/sparql/> {
+		GRAPH <http://www.ebi.ac.uk/efo/> {
+			?efo a owl:Class .
+			BIND( CONCAT( "EFO:", STRAFTER( str(?efo), "EFO_" ) ) AS ?xref )
+
+			OPTIONAL { ?efo owl:deprecated ?xref_dep . }
+			OPTIONAL { ?efo efo1:reason_for_obsolescence ?details . }
+			FILTER( bound(?xref_dep) )
+			BIND( "deprecated" AS ?xref_status )
+		}
+	}
+
+	?class a owl:Class ;
+		oboInOwl:id ?doid ;
+		oboInOwl:hasDbXref ?xref .
+	FILTER NOT EXISTS { ?class owl:deprecated ?any . }
+}
